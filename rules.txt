@@ -1,0 +1,17 @@
+Rules for Empire cellural automata
+
+Each cell is part of a colony.
+Each cell has these variables
+    - Strenght
+    - Age
+    - Reproduction value (0-100%)
+    - Alive
+
+When reproduction value treshold is met cell spawns new cell
+which has same values as parent. These values can mutate meaning they can be little higher or lower.
+
+If two cells from different colonies meet eachother the one with lower strenght value dies.
+
+Each simulation Age value is rised by 1.
+If age exceeds strnght cell dies
+
