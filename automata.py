@@ -11,6 +11,14 @@ class Automata():
 		self.colonies = colonies
 		self.stepsSimulated = 0
 		self.cellRandomMaxStrength = 8
+
+		#FIXME: Causing a key error in battle function when simulating enough.
+		self.useMapLimit = False
+		self.mapLimitTop = 0
+		self.mapLimitBottom = 150
+		self.mapLimitLeft = 0
+		self.mapLimitRight = 150
+
 		self.statsData = {
 			"totalDead":0,
 			"totalNewBorn":0,
@@ -152,10 +160,21 @@ class Automata():
 	#Move cell in x,y to another x,y
 	def moveCell(self,x,y,tx,ty):
 		if self.checkLocation(tx,ty) == False:
-			self.prepareLocation(tx,ty)
-			self.cells[ty][tx] = self.cells[y][x]
-			del self.cells[y][x]
-			return True
+			#Check map limits.
+			allowMove = True
+			if self.useMapLimit:
+				allowMove = False
+				if ty > self.mapLimitTop and ty < self.mapLimitBottom:
+					if tx > self.mapLimitLeft and tx < self.mapLimitRight:
+						allowMove = True
+
+			if allowMove:
+				self.prepareLocation(tx,ty)
+				self.cells[ty][tx] = self.cells[y][x]
+				del self.cells[y][x]
+				return True
+			else:
+				print("NOT ALLOWED")
 		return False
 
 	#Compare two cells strength value.
