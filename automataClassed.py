@@ -174,7 +174,8 @@ class Automata():
             n.nodeRefrences = temp_refs
 
     def newCell(self,x=0,y=0,colonyID=0):
-        self.temp_nodes[y][x].cellReference = Cell(colonyID)
+        if y in self.temp_nodes and x in self.temp_nodes[y]:
+            self.temp_nodes[y][x].cellReference = Cell(colonyID)
 
         '''
         name = random.choice(['Jaska','Marko','Derppis','Topisetä','Sarita','Tommo','Keisari','Dotto'])
@@ -222,6 +223,13 @@ class Automata():
                 amount += 1
         return amount
 
+    def CalculateAliveColonies(self,):
+        for n in self.nodes:
+            if n.cellReference != None:
+                cell = n.cellReference
+                
+                
+
     def Stats(self,):
 
         tempData = {}
@@ -229,44 +237,29 @@ class Automata():
         for n in self.nodes:
             if n.cellReference != None:
                 cell = n.cellReference
-
-                if not cell.colony in self.statData['colonies']:
-                    self.statData['colonies'][cell.colony] = {
-                        'name':random.choice(self.names),
-                    }
-                    tempData[cell.colony] = {
-                        "strn":0,
-                        "cells":0
-                    }
-                print(tempData)
                 
-                if cell.colony in self.statData['colonies']:
-                    pass
 
-                if cell.colony in tempData:
-                    tempData[cell.colony]['strn'] += 1
-        
+                if cell.colony not in tempData:
+                    tempData[cell.colony] = {
+                        "totalCells":0,
+                        "strength":0
+                    }
 
+                tempData[cell.colony]["totalCells"] += 1
+                tempData[cell.colony]["strength"] += cell.strength
 
         infoText = ""
         infoText += "Simulations: "+str(self.statData['steps'])+"\n"
-        '''
-        infoText += "totalNewBorn: "+str(self.statsData["totalNewBorn"])+"\n"
-        infoText += "totalDead: "+str(self.statsData["totalDead"])+"\n"
-        infoText += "totalKills: "+str(self.statsData["totalKills"])+"\n"
-        infoText += "Cells | Strength | AVG Sstrength \n"
 
-        '''
 
-        for colony in self.statData['colonies']:
-            colonyData = self.statData['colonies'][colony]
-
-            infoText += "{id} {key}: {members} | {strn} | {avgStrn:.2f} \n".format(
+        for colony,colonyData in sorted(tempData.items()):
+        
+            infoText += "{id} {key}: {members} | {strn:.2f} | {avgStrn:.2f} \n".format(
                 id=colony,
-			    key=colonyData['name'],
-			    members=0,
-			    strn=tempData,
-			    avgStrn=0
+			    key="noname",
+			    members=colonyData['totalCells'],
+			    strn=colonyData['strength'],
+			    avgStrn=(colonyData['strength']/colonyData['totalCells'])
 		    )
 		
         return infoText
