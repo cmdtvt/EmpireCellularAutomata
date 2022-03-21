@@ -3,6 +3,7 @@ from pygame.locals import *
 import automataVisualizer
 from guiTools import *
 import time
+import winsound
 
 
 pygame.init()
@@ -18,21 +19,7 @@ doSimulate = False
 count = 0
 aut = automataVisualizer.Automata()
 
-'''
-aut.newColony(20,20,0)
-aut.newColony(40,20,2)
-aut.newColony(60,20,4)
-aut.newColony(20,40,3)
-aut.newColony(40,40,1)
-'''
-aut.newColony(40,40,5)
-aut.newColony(60,40,6)
-aut.newColony(40,60,7)
-aut.newColony(60,60,8)
-
-aut.newColony(50,50,9)
-#aut.newColony(2,2,69)
-#aut.newCell(2,2,69)
+aut.newRandomColonies(amount=4)
 
 done = False
 while done == False:
@@ -44,7 +31,11 @@ while done == False:
 		#text(screen,aut.Stats(),20,20,30)
 
 		if doSimulate:
-			aut.Simulate()
+			if aut.CalculateAliveColonies() > 1:
+				aut.Simulate()
+			else:
+				winsound.Beep(400, 1000)
+				doSimulate = False
 	
 
 	for event in pygame.event.get():

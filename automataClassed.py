@@ -14,6 +14,8 @@ class Cell():
         if ageMax:
             if ageMax <= 20:
                 self.ageMax = ageMax
+
+        #Letting these values mutate is not a good idea.
         #if rprChance:
             #self.rprChance = rprChance
         #if mutateRate:
@@ -118,7 +120,7 @@ class Node():
 
 
 class Automata():
-    def __init__(self):
+    def __init__(self,mapWidth=50,mapHeight=50):
         self.simulationSteps = []
         self.temp_nodes = {}
         self.nodes = []
@@ -142,8 +144,8 @@ class Automata():
         }
 
         #World max size in cells
-        self.maxWidth = 100
-        self.maxHeight = 100
+        self.maxWidth = mapWidth
+        self.maxHeight = mapHeight
 
 
         for y in range(self.maxHeight):
@@ -177,25 +179,18 @@ class Automata():
         if y in self.temp_nodes and x in self.temp_nodes[y]:
             self.temp_nodes[y][x].cellReference = Cell(colonyID)
 
-        '''
-        name = random.choice(['Jaska','Marko','Derppis','Topisetä','Sarita','Tommo','Keisari','Dotto'])
-
-        if not colonyID in self.statData['colonies']:
-            self.statData['colonies'][colonyID] = {
-                'name':name,
-                'strn':0,
-                'cells':0
-            }
-        '''
-
     def newColony(self,sx,sy,colonyID):
         for y in range(3):
             for x in range(3):
                 self.newCell(x+sx,y+sy,colonyID)
 
-
-
-
+    def newRandomColonies(self,amount=4):
+        positions = []
+        for a in range(amount):
+            positions.append([random.randrange(0,self.maxWidth),random.randrange(0,self.maxHeight)])
+        
+        for p in positions:
+            self.newColony(p[0],p[1],random.randrange(0,100))
 
 
     def GenStartPos(self,colonies=2,separation=25):
@@ -204,7 +199,6 @@ class Automata():
             for y in range(3):
                 for x in range(3):
                     self.temp_nodes[y][x+temp].cellRefrence = Cell(c)
-                    #print(self.temp_nodes[y][x+temp].cellRefrence.colony)
             temp += separation
 
     def Simulate(self,steps=1):
@@ -223,22 +217,24 @@ class Automata():
                 amount += 1
         return amount
 
-    def CalculateAliveColonies(self,):
+    def CalculateAliveColonies(self):
+        colonies = []
         for n in self.nodes:
             if n.cellReference != None:
                 cell = n.cellReference
+                if cell.colony not in colonies:
+                    colonies.append(cell.colony)
+        return len(colonies)
+
                 
                 
 
     def Stats(self,):
-
         tempData = {}
-
         for n in self.nodes:
             if n.cellReference != None:
                 cell = n.cellReference
                 
-
                 if cell.colony not in tempData:
                     tempData[cell.colony] = {
                         "totalCells":0,
@@ -261,9 +257,7 @@ class Automata():
 			    strn=colonyData['strength'],
 			    avgStrn=(colonyData['strength']/colonyData['totalCells'])
 		    )
-		
         return infoText
-
 
     def LoadSimulation(self,):
         pass
